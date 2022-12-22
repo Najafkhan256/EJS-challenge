@@ -1,0 +1,59 @@
+* {
+  font-family: sans-serif;
+}
+.navbar {
+  padding: 20px 0px;
+}
+.navbar .navbar-brand {
+  font-weight: 700;
+  color: black;
+}
+.navbar .navbar-brand:hover {
+  color: rgb(90, 84, 84);
+}
+.navbar .navbar-nav .nav-item {
+  color: black;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.navbar .navbar-nav .nav-item:hover,
+:active,
+:focus {
+  color: black;
+}
+
+.main-wrapper {
+  min-height: 100vh;
+  padding-top: 50px;
+}
+
+footer {
+  text-align: center;
+  background-color: black;
+  padding: 15px 0px 1px 0px;
+}
+footer p {
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.5px;
+}
+button {
+  padding: 8px 12px;
+  outline: none;
+  box-shadow: none;
+  border: 2px solid black !important;
+  border-radius: 5px;
+  margin: 15px 0px;
+}
+.form-control {
+  padding: 8px 12px;
+  outline: none;
+  box-shadow: none;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.form-label {
+  font-size: 22px;
+}
