@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const { response } = require("express");
+const mongoose = require("mongoose");
 const _ = require("lodash");
 const { lowerCase, truncate } = require("lodash");
 
@@ -12,13 +13,16 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const posts = [
-  {
-    title: "Title",
-    content:
-      "adipisicing elit. Quis reprehenderit cumque eos, animi explicabo architecto nam! Dicta enim est sequi nostrum explicabo inventore eligendi saepe vitae sunt. Sapiente, alias quas?Lorem ipsum dolor sit amet consectetur,"
-  }
-];
+mongoose.set("strictQuery", true);
+
+mongoose.connect("mongodb://localhost:27017/blogDB", { useNewUrlParser: true });
+
+const postSchema = {
+  title: String,
+  content: String
+};
+
+const Post = mongoose.model("Post", postSchema);
 
 const homeStartingContent =
   "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis reprehenderit cumque eos, animi explicabo architecto nam! Dicta enim est sequi nostrum explicabo inventore eligendi saepe vitae sunt. Sapiente, alias quas?Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis reprehenderit cumque eos, animi explicabo architecto nam! Dicta enim est sequi nostrum explicabo inventore eligendi saepe vitae sunt. Sapiente, alias quas?";
@@ -31,7 +35,13 @@ const PORT_URL = 3000;
 
 // HOME ROUTE
 app.get("/", function(req, res) {
-  res.render("home", { homeContent: homeStartingContent, posts: posts });
+  Post.find({}, function(err, posts) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("home", { homeContent: homeStartingContent, posts: posts });
+    }
+  });
   // console.log(posts);
 });
 
@@ -51,39 +61,27 @@ app.get("/compose", function(req, res) {
 });
 
 app.post("/compose", function(req, res) {
-  // METHOD 1
-  /*   const post = req.body.postTitle;
-  const postDesc = req.body.postDescription;
-
-  posts.title = req.body.postTitle;
-  posts.content = req.body.postDescription; */
-
-  // METHOD 2
-  const post = {
+  const post = new Post({
     title: req.body.postTitle,
     content: req.body.postDescription
-  };
-  posts.push(post);
-  res.redirect("/");
+  });
 
-  // console.log("Post Title: " + post + " and message is: " + postDesc);
-  // console.log(posts);
+  post.save();
+  res.redirect("/");
 });
 
 // DYNAMIC ROUTE
-app.get("/posts/:post", function(req, res) {
-  const requestTitle = _.lowerCase(req.params.post);
+app.get("/posts/:postId", function(req, res) {
+  const requestedPostId = req.params.postId;
 
-  posts.forEach(post => {
-    const storedTitle = _.lowerCase(post.title);
-    if (storedTitle === requestTitle) {
-      // METHOD 1
+  Post.findOne({ _id: requestedPostId }, function(err, post) {
+    if (err) {
+      console.log(err);
+    } else {
       res.render("post", {
         title: post.title,
         content: post.content
       });
-      // METHOD 2
-      // res.render("post", { post: post });
     }
   });
 });
